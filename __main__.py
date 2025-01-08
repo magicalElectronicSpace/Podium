@@ -102,7 +102,7 @@ class Podium_Organizer:
 
     def load_calendar(self):
         name = input('Enter calendar name: ')
-        if name == "default":
+        if name == "Default Calendar":
             self.events_dir = "events"
         else:
             self.events_dir = f"{name}_events"
@@ -136,6 +136,7 @@ class Podium_Organizer:
             if item.endswith("_events"):
                 print(item.removesuffix('_events'))
         print("Default Calendar")
+        print("")
 
     def run(self):
         while True:
