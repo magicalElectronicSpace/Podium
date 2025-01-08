@@ -131,7 +131,7 @@ class Podium_Organizer:
 
 
     def list_calendars(self):
-        directory = Path(f"{os.path.expanduser('~')}/.podium_organizer/Files")
+        directory = Path(self.config["folder"])
         for item in os.listdir(directory):
             if item.endswith("_events"):
                 print(item.removesuffix('_events'))
