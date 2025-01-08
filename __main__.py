@@ -72,7 +72,7 @@ class Podium_Organizer:
 
     def add_event(self):
         name = input('Enter event name: ')
-        event_dir = Path(self.config['folder']) / "Files" / self.events_dir / name
+        event_dir = Path(self.config['folder']) / self.events_dir / name
         os.makedirs(event_dir, exist_ok=True)
         
         with open(event_dir / "info.txt", 'w') as f:
