@@ -26,7 +26,7 @@ class Podium_Organizer:
         config_dir = self.file_path.parent.parent
         if not config_dir.exists():
             os.makedirs(config_dir, exist_ok=True)
-            self.config = {"folder": f"{os.path.expanduser('~')}/.podium-organizer/Files", "last_events_dir": "events"}
+            self.config = {"folder": f"{os.path.expanduser('~')}/.podium-organizer/Files"}
             self._save_config()
         else:
             if self.file_path.exists() and self.file_path.stat().st_size > 0:
@@ -102,7 +102,10 @@ class Podium_Organizer:
 
     def load_calendar(self):
         name = input('Enter calendar name: ')
-        self.events_dir = f"{name}_events"
+        if name == "default":
+            self.events_dir = "events"
+        else:
+            self.events_dir = f"{name}_events"
         events_dir = Path(self.config["folder"]) / self.events_dir
         if not events_dir.exists():
             print(f"Calendar {name} does not exist.")
