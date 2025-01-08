@@ -7,7 +7,7 @@ class Podium_Organizer:
     def __init__(self):
         self.data = {}
         self.config = {}
-        self.file_path = Path(f"{os.path.expanduser('~')}/.podium-organizer/config/config.json")
+        self.file_path = Path(f"{os.path.expanduser('~')}/.podium_organizer/config/config.json")
         self._load_or_create_config()
         self.events_dir = self.data["last_events_dir"]
 
@@ -26,7 +26,7 @@ class Podium_Organizer:
         config_dir = self.file_path.parent.parent
         if not config_dir.exists():
             os.makedirs(config_dir, exist_ok=True)
-            self.config = {"folder": f"{os.path.expanduser('~')}/.podium-organizer/Files"}
+            self.config = {"folder": f"{os.path.expanduser('~')}/.podium_organizer/Files"}
             self._save_config()
         else:
             if self.file_path.exists() and self.file_path.stat().st_size > 0:
@@ -35,10 +35,10 @@ class Podium_Organizer:
                         self.config = json.load(f)
                     except json.JSONDecodeError:
                         print("Error: Config file is not in valid JSON format. Creating a new one.")
-                        self.config = {"folder": f"{os.path.expanduser('~')}/.podium-organizer/Files"}
+                        self.config = {"folder": f"{os.path.expanduser('~')}/.podium_organizer/Files"}
                         self._save_config()
             else:
-                self.config = {"folder": f"{os.path.expanduser('~')}/.podium-organizer/Files"}
+                self.config = {"folder": f"{os.path.expanduser('~')}/.podium_organizer/Files"}
                 self._save_config()
             if Path(f"{os.path.expanduser('~')}/.podium_organizer/config/data.json").exists() and Path(f"{os.path.expanduser('~')}/.podium_organizer/config/data.json").stat().st_size > 0:
                 with open(Path(f"{os.path.expanduser('~')}/.podium_organizer/config/data.json"), 'r') as f:
