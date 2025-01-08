@@ -78,7 +78,7 @@ class Podium_Organizer:
         with open(event_dir / "info.txt", 'w') as f:
             f.write(f"Event Name: {name}\n")
             f.write("Event Information:\n")
-            f.write(input("Enter information about the event:") + "\n")
+            f.write(input("Enter information about the event: ") + "\n")
         
         with open(event_dir / "participants.txt", 'w') as f:
             f.write("Participants:\n")
@@ -127,6 +127,16 @@ class Podium_Organizer:
                     datetime = f"{date} at {time}"
                 print(f"{event.name} on {datetime} and repeats {repeat}")
 
+
+
+
+    def list_calendars(self):
+        directory = Path(f"{os.path.expanduser('~')}/.podium_organizer")
+        for item in os.listdir(directory):
+            if item.endswith("_events"):
+                print(item.removesuffix('_events'))
+        print("Default Calendar")
+
     def run(self):
         while True:
             print('Podium Organizer')
@@ -135,6 +145,7 @@ class Podium_Organizer:
             print('3. Remove event')
             print('4. Make new calendar')
             print('5. Load calendar')
+            print('6: List Calendars')
             print("q, e, exit, or quit to exit")
             choice = input('Enter your choice: ')
             if choice == '1':
@@ -147,6 +158,8 @@ class Podium_Organizer:
                 self.make_calendar()
             elif choice == '5':
                 self.load_calendar()
+            elif choice == '6':
+                self.list_calendars()
             elif choice.lower() in ["q", "e", "exit", "quit"]:
                 print('Exiting the program.')
                 self.config["last_events_dir"] = self.events_dir
