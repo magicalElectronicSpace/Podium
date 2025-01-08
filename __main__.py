@@ -138,6 +138,18 @@ class Podium_Organizer:
         print("Default Calendar")
         print("")
 
+
+    def delete_calendar(self):
+        calendar_name = input("Enter the calendar you want to delete: ")
+        if calendar_name == "Default Calendar":
+            calendar_dir = Path(self.config['folder']) / "events"
+        else:
+            calendar_dir = Path(self.config['folder']) / f"{calendar_name}_events"
+        if calendar_dir.exists():
+            shutil.rmtree(calendar_dir)
+            print(f"Event {calendar_name} removed successfully!")
+        else:
+            print(f"Event {calendar_name} does not exist.")
     def run(self):
         while True:
             print('Podium Organizer')
@@ -147,6 +159,7 @@ class Podium_Organizer:
             print('4. Make new calendar')
             print('5. Load calendar')
             print('6: List Calendars')
+            print('7: Delete Calendar')
             print("q, e, exit, or quit to exit")
             choice = input('Enter your choice: ')
             if choice == '1':
@@ -161,6 +174,8 @@ class Podium_Organizer:
                 self.load_calendar()
             elif choice == '6':
                 self.list_calendars()
+            elif choice == '7':
+                self.delete_calendar()
             elif choice.lower() in ["q", "e", "exit", "quit"]:
                 print('Exiting the program.')
                 self.config["last_events_dir"] = self.events_dir
