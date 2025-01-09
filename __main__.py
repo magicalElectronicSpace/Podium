@@ -1,4 +1,4 @@
-from data import Podium_Organizer  
+from data import Podium_Organizer
 
 
 if __name__ == '__main__':
