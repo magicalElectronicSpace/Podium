@@ -131,14 +131,20 @@ class Podium_Organizer:
 
 
     def list_calendars(self):
+        print("Default Calendar")
         directory = Path(self.config["folder"])
         for item in os.listdir(directory):
             if item.endswith("_events"):
                 print(item.removesuffix('_events'))
-        print("Default Calendar")
         print("")
 
 
+    def show_participants(self):
+        event = input("Enter the event you want to show participants for: ")
+        participants_file = Path(self.config["folder"]) / self.events_dir / event / "particapants.txtt"
+        with open(participants_file, "r") as f:
+            for line in f:
+                print(line)
     def delete_calendar(self):
         calendar_name = input("Enter the calendar you want to delete: ")
         if calendar_name == "Default Calendar":
@@ -160,6 +166,7 @@ class Podium_Organizer:
             print('5. Load calendar')
             print('6: List Calendars')
             print('7: Delete Calendar')
+            print('8: Show Participants')
             print("q, e, exit, or quit to exit")
             choice = input('Enter your choice: ')
             if choice == '1':
@@ -176,6 +183,8 @@ class Podium_Organizer:
                 self.list_calendars()
             elif choice == '7':
                 self.delete_calendar()
+            elif choice == '8':
+                self.show_participants()
             elif choice.lower() in ["q", "e", "exit", "quit"]:
                 print('Exiting the program.')
                 self.config["last_events_dir"] = self.events_dir
