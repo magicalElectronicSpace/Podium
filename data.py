@@ -12,10 +12,11 @@ class Podium_Organizer:
         self._load_or_create_config()
         self.mode = self.data["last_mode"]
         if not Path(self.config["folder"]).exists():
-            os.mkdir(self.config["folder"])
-            os.mkdir(self.config["folder"] / "events")
-            os.mkdir(self.config["folder"] / "ToDo")
-
+            Path(self.config["folder"]).mkdir(parents=True)
+        if not (Path(self.config["folder"]) / "events").exists():
+            (Path(self.config["folder"]) / "events").mkdir()
+        if not (Path(self.config["folder"]) / "ToDo").exists():
+            (Path(self.config["folder"]) / "ToDo").mkdir()
 
     def _save_config(self):
         parent_dir = self.file_path.parent
