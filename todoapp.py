@@ -8,8 +8,11 @@ class PodiumToDoApp:
         self.data = data
         self.camel_case_records = self.data["camel_case_records"]
         self.toDoList = self.data["last_todo_list"]
-        if not (Path(self.config["folder"]) / "ToDo" / f"{self.toDoList}.txt").exists():
-            with open(Path(self.config["folder"]) / "ToDo" / f"{self.toDoList}.txt", "w") as f:
+        todo_folder = Path(self.config["folder"]) / "ToDo"
+        if not todo_folder.exists():
+            todo_folder.mkdir(parents=True)
+        if not (todo_folder / f"{self.toDoList}.txt").exists():
+            with open(todo_folder / f"{self.toDoList}.txt", "w") as f:
                 f.write("To Do List\n\n")
 
     def printAll(self):

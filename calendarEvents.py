@@ -7,6 +7,9 @@ class EventCalendar:
         self.config = config
         self.data = data
         self.events_dir = self.data["last_events_dir"]
+        events_folder = Path(self.config["folder"]) / self.events_dir
+        if not events_folder.exists():
+            events_folder.mkdir(parents=True)
     
     def make_calendar(self):
         name = input('Enter calendar name: ')

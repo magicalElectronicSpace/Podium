@@ -6,7 +6,7 @@ from pathlib import Path
 
 class Podium_Organizer:
     def __init__(self):
-        self.data = {}
+        self.data = {"last_events_dir": "events", "last_mode": "calendar", "last_todo_list": "toDoList", "camel_case_records": {"toDoList": "To Do List"}}
         self.config = {}
         self.file_path = Path(f"{os.path.expanduser('~')}/.podium_organizer/config/config.json")
         self._load_or_create_config()
