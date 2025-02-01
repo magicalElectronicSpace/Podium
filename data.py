@@ -3,6 +3,7 @@ from todoapp import PodiumToDoApp
 import json
 import os
 from pathlib import Path
+import curses
 
 class Podium_Organizer:
     def __init__(self):
@@ -63,16 +64,24 @@ class Podium_Organizer:
     
     def run(self):
         out = {"switchMode": False}
-        if self.mode == "calendar":
-            calendar = EventCalendar(self.config, self.data)
-            out = calendar.run()
-            self.data["last_events_dir"] = calendar.events_dir
-        if self.mode == "todo":
-            todoApp = PodiumToDoApp(self.config, self.data)
-            out = todoApp.run()
-            self.data["last_todo_list"] = todoApp.toDoList
-        self.data["last_mode"] = self.mode
-        
-        self._save_config()
-        self._save_data()
+        stdscr = curses.initscr()
+        curses.noecho()
+        curses.cbreak()
+        try:
+            if self.mode == "calendar":
+                calendar = EventCalendar(self.config, self.data, stdscr)
+                out = calendar.run()
+                self.data["last_events_dir"] = calendar.events_dir
+            if self.mode == "todo":
+                todoApp = PodiumToDoApp(self.config, self.data, stdscr)
+                out = todoApp.run()
+                self.data["last_todo_list"] = todoApp.toDoList
+            self.data["last_mode"] = self.mode
+            
+            self._save_config()
+            self._save_data()
+        finally:
+            curses.echo()
+            curses.nocbreak()
+            curses.endwin()
         return out
