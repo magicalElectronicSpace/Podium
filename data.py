@@ -62,26 +62,22 @@ class Podium_Organizer:
                 self.data = {"last_events_dir": "events", "last_mode": "calendar", "last_todo_list": "toDoList", "camel_case_records": {"toDoList": "To Do List"}}
                 self._save_data()
     
-    def run(self):
+    def run(self):  
         out = {"switchMode": False}
-        stdscr = curses.initscr()
-        curses.noecho()
-        curses.cbreak()
-        try:
-            if self.mode == "calendar":
-                calendar = EventCalendar(self.config, self.data, stdscr)
-                out = calendar.run()
-                self.data["last_events_dir"] = calendar.events_dir
-            if self.mode == "todo":
-                todoApp = PodiumToDoApp(self.config, self.data, stdscr)
-                out = todoApp.run()
-                self.data["last_todo_list"] = todoApp.toDoList
-            self.data["last_mode"] = self.mode
-            
-            self._save_config()
-            self._save_data()
-        finally:
-            curses.echo()
-            curses.nocbreak()
-            curses.endwin()
+        if self.mode == "calendar":
+            calendar = EventCalendar(self.config, self.data)
+            out = curses.wrapper(calendar.run)
+            self.data["last_events_dir"] = calendar.events_dir
+        if self.mode == "todo":
+            todoApp = PodiumToDoApp(self.config, self.data)
+            out = curses.wrapper(todoApp.run)
+            self.data["last_todo_list"] = todoApp.toDoList
+        self.data["last_mode"] = self.mode
+        
+        self._save_config()
+        self._save_data()
         return out
+
+if __name__ == "__main__":
+    organizer = Podium_Organizer()
+    organizer.run()

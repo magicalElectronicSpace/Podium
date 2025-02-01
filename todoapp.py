@@ -1,5 +1,7 @@
 from pathlib import Path
 import os
+import curses
+import sys
 
 
 class PodiumToDoApp:
@@ -15,12 +17,28 @@ class PodiumToDoApp:
             with open(todo_folder / f"{self.toDoList}.txt", "w") as f:
                 f.write("To Do List\n\n")
 
+    def endWin(self):
+        curses.endwin()
+
+    def startWin(self, pressEnter=True):
+        if pressEnter:
+            input()
+            sys.stdout.write('\r')
+            sys.stdout.flush()
+        curses.doupdate()
+
+    
+    
+  
+
     def printAll(self):
+        self.endWin()
         with open(Path(self.config["folder"]) / "ToDo" / f"{self.toDoList}.txt", "r") as f:
             for line in f:
                 print(line.strip())
+        self.startWin()
 
-    
+
     def to_camel_case(self, s, record=False):
         # Split the string into words
         words = s.split()
@@ -37,23 +55,26 @@ class PodiumToDoApp:
         
         return camel_case
 
-
-
     def printCompleted(self):
+        self.endWin()
         with open(Path(self.config["folder"]) / "ToDo" / f"{self.toDoList}.txt", "r") as f:
             all_lines = f.readlines()
             print(all_lines[0].strip())
             for line in f:
                 if line.startswith("Done: "):
                     print(line.strip())
+        self.startWin()
 
     def addTask(self):
+        self.endWin()
         task = input("Enter the task to add: ")
         with open(Path(self.config["folder"]) / "ToDo" / f"{self.toDoList}.txt", "a") as f:
             f.write("Not Done: " + task + "\n")
         print(f"Task \"{task}\" added to the list.")
+        self.startWin()
 
     def removeTask(self):
+        self.endWin()
         task_to_remove = input("Enter the task to remove: ")
         lines = []
         with open(Path(self.config["folder"]) / "ToDo" / f"{self.toDoList}.txt", "r") as f:
@@ -63,29 +84,30 @@ class PodiumToDoApp:
                 if f"Done: {line.removeprefix('Done: ').strip()}" != task_to_remove and f"Not done: {line.removeprefix('Not done: ').strip()}" != task_to_remove:
                     f.write(line)
         print(f"Task \"{task_to_remove}\" removed from the list.")
+        self.startWin()
 
-
+    
     def add_prefix(self, prefix, original_string):
         return prefix + original_string
 
-
-
-
     def listLists(self):
+        self.endWin()
         for file in os.listdir(Path(self.config["folder"]) / "ToDo"):
             if file.endswith(".txt"):
                 print(self.camel_case_records[file.removesuffix(".txt")])
-
-    
+        self.startWin()
 
     def addList(self):
+        self.endWin()
         name = input("What do you want the name of the task list to be: ")
         camel_cased = self.to_camel_case(name, record=True)
         with open(Path(self.config["folder"]) / "ToDo" / f"{camel_cased}.txt", "w") as f:
             f.write(f"{name}\n\n")
         self.toDoList = camel_cased
+        self.startWin(pressEnter=False)
 
     def removeList(self):
+        self.endWin()
         list_to_remove = input("Enter the name of the list to remove: ")
         camel_cased = self.to_camel_case(list_to_remove)
         file_path = Path(self.config["folder"]) / "ToDo" / f"{camel_cased}.txt"
@@ -95,9 +117,11 @@ class PodiumToDoApp:
             print(f"List \"{list_to_remove}\" removed.")
         else:
             print(f"List \"{list_to_remove}\" does not exist.")
+        self.startWin()
 
-
+    
     def complete_task(self):
+        self.endWin()
         i = input("What task do you want to complete? ")
         with open(Path(self.config["folder"]) / "ToDo" / f"{self.toDoList}.txt", "r") as f:
             lines = f.readlines()
@@ -116,7 +140,10 @@ class PodiumToDoApp:
                         f.write(line)
                 else:
                     f.write(line)
-    def makeIncomplete(self):                 
+        self.startWin()
+
+    def makeIncomplete(self):
+        self.endWin()                 
         i = input("What task do you want to make incomplete? ")
         with open(Path(self.config["folder"]) / "ToDo" / f"{self.toDoList}.txt", "r") as f:
             lines = f.readlines()
@@ -134,55 +161,82 @@ class PodiumToDoApp:
                         f.write(line)
                 else:
                     f.write(line)
+        self.startWin()
+
+
 
     def changeToDoList(self):
-        toDoList = self.to_camel_case(input("What to do list do ou want to change to? "))
+        self.endWin()
+        toDoList = self.to_camel_case(input("What to do list do you want to change to? "))
         self.toDoList = toDoList
+        self.startWin()
     
-    def run(self) -> dict:
+    def run(self, stdscr) -> dict:
         dictionary = {"switchMode": False}
-        print("Podium Organizer")
-        print("1. Add task")
-        print("2. Remove Task")
-        print("3. Print all tasks")
-        print("4. Show Completed Tasks")
-        print("5. Remove a List")
-        print("6. Complete a Task")
-        print("7. Change ToDo List")
-        print("8. Make Incomplete")
-        print("9. List All ToDo Lists")
-        print("10. Add List")
-        print("11. Switch Mode")
-        print("q, e, exit, quit - Exit the program")
-        
+        curses.curs_set(0)
+        current_row = 0
+        menu = [
+            'Add task',
+            'Remove Task',
+            'Print all tasks',
+            'Show Completed Tasks',
+            'Remove a List',
+            'Complete a Task',
+            'Change ToDo List',
+            'Make Incomplete',
+            'List All ToDo Lists',
+            'Add List',
+            'Switch Mode',
+            'Exit'
+        ]
+
+        def print_menu(stdscr, selected_row_idx):
+            stdscr.clear()
+            stdscr.addstr('Podium Organizer\n', curses.A_BOLD)
+            for idx, row in enumerate(menu):
+                if idx == selected_row_idx:
+                    stdscr.addstr(f"{row}\n", curses.color_pair(1))
+                else:
+                    stdscr.addstr(f"{row}\n")
+            stdscr.refresh()
+
+        curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
+        print_menu(stdscr, current_row)
+
         while True:
-            userInput = input("Enter your choice: ")
-            if userInput in ["q", "e", "exit", "quit"]:
-                break
-            elif userInput == "1":
-                self.addTask()
-            elif userInput == "2":
-                self.removeTask()
-            elif userInput == "3":
-                self.printAll()
-            elif userInput == "4":
-                self.printCompleted()
-            elif userInput == "5":
-                self.removeList()
-            elif userInput == "6":
-                self.complete_task()
-            elif userInput == "7":
-                self.changeToDoList()
-            elif userInput == "8":
-                self.makeIncomplete()
-            elif userInput == "9":
-                self.listLists()
-            elif userInput == "10":
-                self.addList()
-            elif userInput == "11":
-                dictionary["switchMode"] = True
-                break
-            else:
-                print("Invalid choice. Please try again.")
-        
+            key = stdscr.getch()
+
+            if key == curses.KEY_UP and current_row > 0:
+                current_row -= 1
+            elif key == curses.KEY_DOWN and current_row < len(menu) - 1:
+                current_row += 1
+            elif key == curses.KEY_ENTER or key in [10, 13]:
+                if current_row == 0:
+                    self.addTask()
+                elif current_row == 1:
+                    self.removeTask()
+                elif current_row == 2:
+                    self.printAll()
+                elif current_row == 3:
+                    self.printCompleted()
+                elif current_row == 4:
+                    self.removeList()
+                elif current_row == 5:
+                    self.complete_task()
+                elif current_row == 6:
+                    self.changeToDoList()
+                elif current_row == 7:
+                    self.makeIncomplete()
+                elif current_row == 8:
+                    self.listLists()
+                elif current_row == 9:
+                    self.addList()
+                elif current_row == 10:
+                    dictionary["switchMode"] = True
+                    break
+                elif current_row == 11:
+                    self.endWin()
+                    print('Exiting the program.')
+                    break
+            print_menu(stdscr, current_row)
         return dictionary
