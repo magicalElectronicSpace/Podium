@@ -78,7 +78,6 @@ class EventCalendar:
 
 
     def load_calendar(self):
-        self.endWin()
         directory = Path(self.config["folder"])
         calendars = ["Default Calendar"] + [item.removesuffix('_events') for item in os.listdir(directory) if item.endswith("_events")]
         
@@ -113,8 +112,10 @@ class EventCalendar:
                     self.events_dir = f"{name}_events"
                 events_dir = Path(self.config["folder"]) / self.events_dir
                 if not events_dir.exists():
+                    self.endWin()
                     print(f"Calendar {name} does not exist.")
                 else:
+                    self.endWin()
                     print(f"Calendar {name} loaded successfully!")
                 break
             print_menu(self.stdscr, current_row)
