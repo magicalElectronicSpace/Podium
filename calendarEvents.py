@@ -27,7 +27,7 @@ class EventCalendar:
 
     def make_calendar(self):
         self.endWin()
-        name = input('Enter calendar name: ', end='')
+        name = input('Enter calendar name: ')
         calendar_path = Path(self.config['folder']) / f"{name}_events"
         if not calendar_path.exists():
             os.mkdir(calendar_path)
@@ -163,6 +163,7 @@ class EventCalendar:
         def print_menu(stdscr, selected_row_idx):
             stdscr.clear()
             h, w = stdscr.getmaxyx()
+            global x, y
             x = w // 2 - max(len(row) for row in menu) // 2
             y = h // 2 - len(menu) // 2
             stdscr.addstr(y - 2, x, 'Podium Organizer', curses.A_BOLD)
