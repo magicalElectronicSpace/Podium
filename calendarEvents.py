@@ -79,16 +79,45 @@ class EventCalendar:
 
     def load_calendar(self):
         self.endWin()
-        name = input('Enter calendar name: ')
-        if name == "Default Calendar":
-            self.events_dir = "events"
-        else:
-            self.events_dir = f"{name}_events"
-        events_dir = Path(self.config["folder"]) / self.events_dir
-        if not events_dir.exists():
-            print(f"Calendar {name} does not exist.")
-        else:
-            print(f"Calendar {name} loaded successfully!")
+        directory = Path(self.config["folder"])
+        calendars = ["Default Calendar"] + [item.removesuffix('_events') for item in os.listdir(directory) if item.endswith("_events")]
+        
+        def print_menu(stdscr, selected_row_idx):
+            stdscr.clear()
+            h, w = stdscr.getmaxyx()
+            x = w // 2 - max(len(row) for row in calendars) // 2
+            y = h // 2 - len(calendars) // 2
+            stdscr.addstr(y - 2, x, 'Select Calendar', curses.A_BOLD)
+            for idx, row in enumerate(calendars):
+                if idx == selected_row_idx:
+                    stdscr.addstr(y + idx, x, row, curses.color_pair(1))
+                else:
+                    stdscr.addstr(y + idx, x, row)
+            stdscr.refresh()
+
+        curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
+        current_row = 0
+        print_menu(self.stdscr, current_row)
+
+        while True:
+            key = self.stdscr.getch()
+            if key == curses.KEY_UP and current_row > 0:
+                current_row -= 1
+            elif key == curses.KEY_DOWN and current_row < len(calendars) - 1:
+                current_row += 1
+            elif key == curses.KEY_ENTER or key in [10, 13]:
+                name = calendars[current_row]
+                if name == "Default Calendar":
+                    self.events_dir = "events"
+                else:
+                    self.events_dir = f"{name}_events"
+                events_dir = Path(self.config["folder"]) / self.events_dir
+                if not events_dir.exists():
+                    print(f"Calendar {name} does not exist.")
+                else:
+                    print(f"Calendar {name} loaded successfully!")
+                break
+            print_menu(self.stdscr, current_row)
         self.startWin()
 
     def show_events(self):
@@ -144,6 +173,7 @@ class EventCalendar:
             print(f"Calendar {calendar_name} does not exist.")
         self.startWin()
     def run(self, stdscr) -> dict:
+        self.stdscr = stdscr
         dictionary = {"switchMode": False}
         curses.curs_set(0)
         current_row = 0
@@ -160,7 +190,7 @@ class EventCalendar:
             'Exit'
         ]
 
-        def print_menu(stdscr, selected_row_idx):
+        def print_menu(stdscr, selected_row_idx, podum=True):
             stdscr.clear()
             h, w = stdscr.getmaxyx()
             global x, y
