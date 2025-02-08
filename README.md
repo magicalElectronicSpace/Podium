@@ -8,4 +8,4 @@ There is more information [here](https://skypi.club/Podium/index.html).
 
 ## License
 
-This project is licenced under the MIT lisence.
+This project is licenced under the Skypi License.
